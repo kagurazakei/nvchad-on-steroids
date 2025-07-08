@@ -4,7 +4,7 @@ return {
     -- event = 'BufWritePre', -- uncomment for format on save
     opts = require "configs.conform",
   },
-
+  { import = "nvchad.blink.lazyspec" },
   { "chrisgrieser/nvim-genghis" },
   { "elentok/format-on-save.nvim" },
   {
@@ -39,8 +39,8 @@ return {
       { "<leader>lg", "<cmd>LazyGit<cr>", desc = "LazyGit" }
     }
   },
-  { "nvchad/volt",  lazy = true },
-  { "nvchad/menu",  lazy = true },
+  { "nvchad/volt", lazy = true },
+  { "nvchad/menu", lazy = true },
 
 
   -- load luasnips + cmp related in insert mode only

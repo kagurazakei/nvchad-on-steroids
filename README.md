@@ -33,5 +33,5 @@ git clone https://github.com/maotsugiri/nvchad-on-steroids ~/.config/nvim
 ---
 
 ### 🔗 Credits
-[NvChad](https://github.com/NvChad/NvChad)  🎨 Base nvchad repo
-[nix4nvchad](https://github.com/nix-community/nix4nvchad)  ⚙️ base nix4nvchad repo
+[🎨 Base nvchad repo](https://github.com/NvChad/NvChad)  
+[⚙️ base nix4nvchad repo](https://github.com/nix-community/nix4nvchad)  

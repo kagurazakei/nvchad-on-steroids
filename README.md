@@ -25,9 +25,13 @@ You can download this config as a zip:
 
 Or clone directly:
 
+
 ```bash
 git clone https://github.com/maotsugiri/nvchad-on-steroids ~/.config/nvim
+```
 
-🔗 Credits
-[NvChad](https://github.com/NvChad/NvChad)
-[nix4nvchad](https://github.com/nix-community/nix4nvchad)
+---
+
+### 🔗 Credits
+[NvChad](https://github.com/NvChad/NvChad)  🎨 Base nvchad repo
+[nix4nvchad](https://github.com/nix-community/nix4nvchad)  ⚙️ base nix4nvchad repo

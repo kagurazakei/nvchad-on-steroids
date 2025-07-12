@@ -1,68 +1,96 @@
 -- load defaults i.e lua_lsp
 require("nvchad.configs.lspconfig").defaults()
 
-local lspconfig = require "lspconfig"
 
--- EXAMPLE
-local servers = { "html", "cssls" }
-local nvlsp = require "nvchad.configs.lspconfig"
-
--- lsps with default config
-for _, lsp in ipairs(servers) do
-  lspconfig[lsp].setup {
-    on_attach = nvlsp.on_attach,
-    on_init = nvlsp.on_init,
-    capabilities = nvlsp.capabilities,
-  }
-end
-
-local lspconfig = require('lspconfig')
-local configs = require('lspconfig/configs')
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities.textDocument.completion.completionItem.snippetSupport = true
-
-lspconfig.emmet_ls.setup({
-  -- on_attach = on_attach,
-  capabilities = capabilities,
-  filetypes = { "css", "eruby", "html", "javascript", "javascriptreact", "less", "sass", "scss", "svelte", "pug", "typescriptreact", "vue" },
-  init_options = {
-    html = {
-      options = {
-        -- For possible options, see: https://github.com/emmetio/emmet/blob/master/src/config.ts#L79-L267
-        ["bem.enabled"] = true,
+local servers = {
+  -- with default options
+  bashls = {},
+  blueprint_ls = {},
+  cssls = {},
+  docker_compose_language_service = {},  -- :set filetype=yaml.docker-compose
+  dockerls = {},
+  jsonls = {},
+  html = {},
+  nixd = {},
+  rust_analyzer = {},
+  vala_ls = {},
+  -- with custom options
+  emmet_language_server = {
+    filetypes = {
+      "css",
+      "eruby",
+      "html",
+      "javascript",
+      "javascriptreact",
+      "htmldjango",
+      "less",
+      "sass",
+      "scss",
+      "pug",
+      "typescriptreact",
+      "vue"
+    },
+  },
+  ts_ls = {
+    init_options = {
+      plugins = {
+        {
+          name = '@vue/typescript-plugin',
+          -- it's a hack for nixOS /nix/store/
+          location = vim.fs.joinpath(
+            vim.fs.dirname(
+              vim.fs.dirname(
+                vim.fn.system(
+                  'echo -n $(readlink -f $(which vue-language-server))'
+                )
+              )
+            ),
+            'lib/node_modules/@vue/language-server'
+          ),
+          --
+          languages = { 'vue' },
+        },
       },
     },
-  }
-})
--- configuring single server, example: typescript
-lspconfig.ts_ls.setup {
-  on_attach = nvlsp.on_attach,
-  on_init = nvlsp.on_init,
-  capabilities = nvlsp.capabilities,
+    filetypes = {
+      'typescript',
+      'javascript',
+      'javascriptreact',
+      'typescriptreact',
+      'vue'
+    },
+  },
+  pylsp = {
+    settings = {
+      plugins = {
+        ruff = {
+          enable = true,
+          formatEnabled = true,
+          -- ignored when a pyproject.toml or ruff.toml is present
+          lineLength = 79,
+          select = {
+            "E",  -- pycodestyle errors (PEP 8)
+            "W",  -- pycodestyle warnings
+            "F",  -- PyFlakes
+            "I",  -- isort
+            "UP"  -- pyupgrade
+          },
+          perFileIgnores = {
+            ["__init__.py"] = "CPY001"
+          },
+        },
+        flake8 = { enabled = false, },
+        pycodestyle = { enabled = false },
+        pyflakes = { enabled = false },
+        pylint = { enabled = false },
+        mccabe = { enabled = false },
+      },
+    }
+  },
+  -- add more lsp servers here ...
 }
 
-lspconfig.emmet_language_server.setup({
-  filetypes = { "css", "eruby", "html", "javascript", "javascriptreact", "less", "sass", "scss", "pug", "typescriptreact", "nix", "nil" },
-  -- Read more about this options in the [vscode docs](https://code.visualstudio.com/docs/editor/emmet#_emmet-configuration).
-  -- **Note:** only the options listed in the table are supported.
-  init_options = {
-    ---@type table<string, string>
-    includeLanguages = {},
-    --- @type string[]
-    excludeLanguages = {},
-    --- @type string[]
-    extensionsPath = {},
-    --- @type table<string, any> [Emmet Docs](https://docs.emmet.io/customization/preferences/)
-    preferences = {},
-    --- @type boolean Defaults to `true`
-    showAbbreviationSuggestions = true,
-    --- @type "always" | "never" Defaults to `"always"`
-    showExpandedAbbreviation = "always",
-    --- @type boolean Defaults to `false`
-    showSuggestionsAsSnippets = false,
-    --- @type table<string, any> [Emmet Docs](https://docs.emmet.io/customization/syntax-profiles/)
-    syntaxProfiles = {},
-    --- @type table<string, string> [Emmet Docs](https://docs.emmet.io/customization/snippets/#variables)
-    variables = {},
-  },
-})
+for name, opts in pairs(servers) do
+  vim.lsp.enable(name)  -- nvim v0.11.0 or above required
+  vim.lsp.config(name, opts) -- nvim v0.11.0 or above required
+end

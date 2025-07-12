@@ -1,4 +1,4 @@
-require "nvchad.mappings"
+require("nvchad.mappings")
 
 -- add yours here
 
@@ -11,13 +11,16 @@ map("i", "jj", "<ESC>")
 --
 -- Keyboard users
 vim.keymap.set("n", "<C-t>", function()
-  require("menu").open("default")
+	require("menu").open("default")
 end, {})
-
+-- <leader>lf  ⇒  “format current buffer”
+vim.keymap.set("n", "<leader>lf", function()
+	require("conform").format({ async = true })
+end, { desc = "Format with Conform" })
 -- mouse users + nvimtree users!
 vim.keymap.set("n", "<RightMouse>", function()
-  vim.cmd.exec '"normal! \\<RightMouse>"'
+	vim.cmd.exec('"normal! \\<RightMouse>"')
 
-  local options = vim.bo.ft == "NvimTree" and "nvimtree" or "default"
-  require("menu").open(options, { mouse = true })
+	local options = vim.bo.ft == "NvimTree" and "nvimtree" or "default"
+	require("menu").open(options, { mouse = true })
 end, {})

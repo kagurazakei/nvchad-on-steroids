@@ -10,7 +10,12 @@ if not vim.uv.fs_stat(lazypath) then
 end
 
 vim.opt.rtp:prepend(lazypath)
-
+vim.api.nvim_create_autocmd("BufWritePre", {
+  pattern = "*.nix",
+  callback = function()
+    require("conform").format { async = true }
+  end,
+})
 local lazy_config = require "configs.lazy"
 
 -- load plugins separate
@@ -37,10 +42,20 @@ vim.schedule(function()
 end)
 require "genghis"
 
-local format_on_save = require("format-on-save")
-local formatters = require("format-on-save.formatters")
+local format_on_save = require "format-on-save"
+local formatters = require "format-on-save.formatters"
 
-format_on_save.setup({
+vim.api.nvim_create_autocmd("BufWritePre", {
+  callback = function(args)
+    print "BufWritePre triggered, formatting..."
+    local bufnr = args.buf
+    local ft = vim.bo[bufnr].filetype
+    if ft == "nix" or ft == "lua" then
+      require("conform").format { bufnr = bufnr, async = false }
+    end
+  end,
+})
+format_on_save.setup {
   exclude_path_patterns = {
     "/node_modules/",
     ".local/share/nvim/lazy",
@@ -51,7 +66,8 @@ format_on_save.setup({
     java = formatters.lsp,
     javascript = formatters.lsp,
     json = formatters.lsp,
-    lua = formatters.lsp,
+    lua = formatters.stylua,
+    nix = formatters.alejandra,
     markdown = formatters.prettierd,
     openscad = formatters.lsp,
     python = formatters.black,
@@ -65,11 +81,11 @@ format_on_save.setup({
     yaml = formatters.lsp,
 
     -- Add your own shell formatters:
-    myfiletype = formatters.shell({ cmd = { "myformatter", "%" } }),
+    myfiletype = formatters.shell { cmd = { "myformatter", "%" } },
 
     -- Add lazy formatter that will only run when formatting:
     my_custom_formatter = function()
-      if vim.api.nvim_buf_get_name(0):match("/README.md$") then
+      if vim.api.nvim_buf_get_name(0):match "/README.md$" then
         return formatters.prettierd
       else
         return formatters.lsp()
@@ -78,51 +94,53 @@ format_on_save.setup({
 
     -- Add custom formatter
     filetype1 = formatters.remove_trailing_whitespace,
-    filetype2 = formatters.custom({ format = function(lines)
-      return vim.tbl_map(function(line)
-        return line:gsub("true", "false")
-      end, lines)
-    end}),
+    filetype2 = formatters.custom {
+      format = function(lines)
+        return vim.tbl_map(function(line)
+          return line:gsub("true", "false")
+        end, lines)
+      end,
+    },
 
     -- Concatenate formatters
     python = {
       formatters.remove_trailing_whitespace,
-      formatters.shell({ cmd = "tidy-imports" }),
+      formatters.shell { cmd = "tidy-imports" },
       formatters.black,
       formatters.ruff,
     },
 
     -- Use a tempfile instead of stdin
     go = {
-      formatters.shell({
+      formatters.shell {
         cmd = { "goimports-reviser", "-rm-unused", "-set-alias", "-format", "%" },
         tempfile = function()
-          return vim.fn.expand("%") .. '.formatter-temp'
-        end
-      }),
-      formatters.shell({ cmd = { "gofmt" } }),
+          return vim.fn.expand "%" .. ".formatter-temp"
+        end,
+      },
+      formatters.shell { cmd = { "gofmt" } },
     },
 
     -- Add conditional formatter that only runs if a certain file exists
     -- in one of the parent directories.
     javascript = {
-      formatters.if_file_exists({
+      formatters.if_file_exists {
         pattern = ".eslintrc.*",
-        formatter = formatters.eslint_d_fix
-      }),
-      formatters.if_file_exists({
+        formatter = formatters.eslint_d_fix,
+      },
+      formatters.if_file_exists {
         pattern = { ".prettierrc", ".prettierrc.*", "prettier.config.*" },
         formatter = formatters.prettierd,
-      }),
+      },
       -- By default it stops at the git repo root (or "/" if git repo not found)
       -- but it can be customized with the `stop_path` option:
-      formatters.if_file_exists({
+      formatters.if_file_exists {
         pattern = ".prettierrc",
         formatter = formatters.prettierd,
         stop_path = function()
           return "/my/custom/stop/path"
-        end
-      }),
+        end,
+      },
     },
   },
 
@@ -136,4 +154,4 @@ format_on_save.setup({
   -- By default, all shell commands are prefixed with "sh -c" (see PR #3)
   -- To prevent that set `run_with_sh` to `false`.
   run_with_sh = false,
-})
+}

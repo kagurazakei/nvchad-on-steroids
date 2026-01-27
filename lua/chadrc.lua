@@ -1,7 +1,7 @@
 local options = {
 
   base46 = {
-    theme = "rxyhn", -- default theme
+    theme = "oxocarbon", -- default theme
     hl_add = {},
     hl_override = {
       Normal = {
@@ -20,13 +20,13 @@ local options = {
     cmp = {
       sources = {
         -- ...
-        { name = "codeium" }
+        { name = "codeium" },
       },
-      icons_left = false,  -- only for non-atom styles!
+      icons_left = false, -- only for non-atom styles!
       lspkind_text = true,
       style = "flat_dark", -- default/flat_light/flat_dark/atom/atom_colored
       format_colors = {
-        tailwind = true,   -- will work for css lsp too
+        tailwind = true, -- will work for css lsp too
         icon = "󱓻",
       },
     },
@@ -78,7 +78,6 @@ local options = {
       { txt = "  File Manager", keys = "C-Up", cmd = "Yazi" },
       { txt = "  LazyGit", keys = "lg", cmd = "LazyGit" },
 
-
       { txt = "─", hl = "NvDashFooter", no_gap = true, rep = true },
 
       {
@@ -111,7 +110,7 @@ local options = {
   lsp = { signature = true },
 
   cheatsheet = {
-    theme = "grid",                                                     -- simple/grid
+    theme = "grid", -- simple/grid
     excluded_groups = { "terminal (t)", "autopairs", "Nvim", "Opens" }, -- can add group name or with mode
   },
 
